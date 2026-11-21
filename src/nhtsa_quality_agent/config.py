@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 DEFAULT_DATA_DIR = Path("data")
+DEFAULT_LLM_MODEL = "claude-haiku-5-5"
 
 
 class MissingSettingError(ValueError):
@@ -15,7 +16,8 @@ class MissingSettingError(ValueError):
 class Settings:
     """Immutable application configuration."""
 
-    llm_api_key: str
+    anthropic_api_key: str
+    llm_model: str = DEFAULT_LLM_MODEL
     data_dir: Path = DEFAULT_DATA_DIR
 
 
@@ -29,6 +31,7 @@ def _require_env(name: str) -> str:
 def load_settings() -> Settings:
     """Build settings from the current environment."""
     return Settings(
-        llm_api_key=_require_env("LLM_API_KEY"),
+        anthropic_api_key=_require_env("ANTHROPIC_API_KEY"),
+        llm_model=os.environ.get("LLM_MODEL", "").strip() or DEFAULT_LLM_MODEL,
         data_dir=Path(os.environ.get("DATA_DIR") or DEFAULT_DATA_DIR),
     )

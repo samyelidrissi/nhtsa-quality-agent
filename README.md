@@ -19,6 +19,34 @@ cp .env.example .env    # then fill in your keys
 uv run pytest           # run the test suite
 ```
 
+## Usage
+
+```bash
+uv run python -m nhtsa_quality_agent.data.ingest   # download raw complaints & recalls (~1 min)
+uv run python -m nhtsa_quality_agent.data.clean    # clean into data/processed/*.parquet
+uv run python -m nhtsa_quality_agent.rag.index     # embed & index into data/index (Chroma)
+uv run python -m nhtsa_quality_agent.rag.ask "What do owners report about phantom braking?" --model "model 3"
+```
+
+`ask` accepts `--make`, `--model`, `--year`, `--source {complaint,recall}`, `-k` and
+`--retrieve-only` (no LLM call). Answers cite their sources as `[C-<odi number>]`
+(complaint) or `[R-<campaign number>]` (recall).
+
+## How it works
+
+```
+NHTSA API ──ingest──▶ data/raw (JSON) ──clean──▶ data/processed (Parquet)
+    ──index──▶ Chroma (bge-small-en-v1.5 embeddings, cosine)
+    ──ask──▶ top-k sources (+ metadata filters) ──▶ Claude ──▶ answer with citations
+```
+
+- **One complaint = one document** (median ~90 words, no chunking needed). Recalls are
+  indexed once per covered vehicle so they can be filtered by make/model/year, then
+  deduplicated by campaign at query time.
+- **Embeddings run locally** with [fastembed](https://github.com/qdrant/fastembed) (ONNX, no PyTorch).
+- **Grounding**: the model must cite source ids; citations that don't match a retrieved
+  source are flagged as hallucinated.
+
 ## Development
 
 ```bash
