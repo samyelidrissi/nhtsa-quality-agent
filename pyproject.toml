@@ -1,0 +1,32 @@
+[project]
+name = "nhtsa-quality-agent"
+version = "0.1.0"
+description = "RAG assistant and agent for automotive quality incidents, built on public NHTSA complaints and recalls."
+readme = "README.md"
+authors = [
+    { name = "Samy El Idrissi", email = "329493452+samyelidrissi@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+requires = ["uv_build>=0.13.9,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "ruff>=0.17.6",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+# E/W: pycodestyle, F: pyflakes, I: isort, B: bugbear, UP: pyupgrade, SIM: simplify
+select = ["E", "W", "F", "I", "B", "UP", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
