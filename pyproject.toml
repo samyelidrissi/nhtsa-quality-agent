@@ -19,6 +19,8 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+    "jupyter>=1.1.1",
+    "matplotlib>=3.11.2",
     "pytest>=9.2.0",
     "ruff>=0.17.6",
 ]
